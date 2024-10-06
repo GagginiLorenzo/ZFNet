@@ -28,7 +28,7 @@ names = [layer.name for layer in model.layers]
 layer_outputs = [model.get_layer(name).output for name in names]
 names # Noms des couches du modèle
 
-activations = get_activations(model, img_array, names[8]) # Obtenir les activations de la n-ième couche
+activations = get_activations(model, img_array, names[1]) # Obtenir les activations de la n-ième couche
 
 # Visualiser les filtres
 num_filters = 4  # Nombre de filtres à visualiser
