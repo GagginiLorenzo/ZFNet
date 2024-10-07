@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout,Input,Conv2DTranspose
+from tensorflow.keras.layers import ReLU, Conv2D, MaxPooling2D, Dense, Flatten, Dropout,Input,Conv2DTranspose,UpSampling2D
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import Model
@@ -64,17 +64,33 @@ def get_activations(model, img_array, layer_name):
     return [intermediate_model, activations] # Retourne le modèle et ces filtres
 
 # Fonction pour visualiser les filtres sortant d'une couche du modèle ZFNet
-def visualize_filters(activations, num_filters):
+def visualize_filters(activations, num_filters,name):
     fig, axes = plt.subplots(1, num_filters, figsize=(20, 20))
     for i in range(num_filters):
         ax = axes[i]
         ax.imshow(activations[0, :, :, i], cmap='viridis')
         ax.axis('off')
-    plt.savefig('output.jpg')
+    plt.savefig(name)
     plt.show()
 
 
 ############################################################################################################ à faire
-# Attacher les couches de déconvolutions (pas encore trouver de bonne structure algorithmique)
+# Attacher les couches de déconvolutions (REUSSI!) reste a généraliser pour tout les stacks
 # Entrainement du modèle (ImageNet)
 # Test visuel et scoring (à définir)
+
+def create_deconv_model(input_shape):
+    """
+    DECONV QUE LE PREMIER STACK POUR LE MOMENT !!
+    """
+    model = Sequential()
+    model.add(Input(shape=input_shape))
+
+    # Upsampling to reverse the MaxPooling2D layer
+    model.add(UpSampling2D(size=(2, 2))) # surement pas la bonne methode (verifier le type de pooling)
+    # ReLU activation
+    model.add(ReLU())
+    # Deconvolution to reverse the Conv2D layer
+    model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu')) # dernier activation relu ? à verifier...
+
+    return model
