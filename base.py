@@ -73,6 +73,14 @@ def visualize_filters(activations, num_filters,name):
     plt.savefig(name)
     plt.show()
 
+# Fonction pour évaluer le modèle sur une image en plus jolie
+def evaluate_model_on_image(img, description, model):
+    img_array = load_and_preprocess_image(img, target_size=(224, 224))
+    #plt.imshow(img_array[0])
+    prediction = model.predict(img_array)
+    print(f"Prediction for {description}: {prediction}")
+    return prediction
+
 
 ############################################################################################################ à faire
 # Attacher les couches de déconvolutions (REUSSI!) reste a généraliser pour tout les stacks
