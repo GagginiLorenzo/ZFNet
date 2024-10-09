@@ -91,33 +91,160 @@ def create_deconv_test(input_shape):
     # ReLU activation
     model.add(ReLU())
     # Deconvolution to reverse the Conv2D layer
-    model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu')) # dernier activation relu ? à verifier...
+    model.add(Conv2DTranspose(96, (7, 7), strides=(2, 2), activation='relu')) # dernier activation relu ? à verifier...
 
     return model
 
-def create_deconv_model(input_shape):
-    """
-    PAS ENCORE FINI
-    """
+def create_deconv_model(input_shape, stack):
+
     model = Sequential()
     model.add(Input(shape=input_shape))
+    match stack:
+        case 5:
+            # Cinquième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(384, (3, 3)))
 
-    # Cinquième stack
-    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
-    model.add(Conv2DTranspose(256, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+            # Quatrième stack
+            model.add(Conv2DTranspose(384, (3, 3)))
 
-    # Quatrième stack
-    model.add(Conv2DTranspose(384, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+            # Troisième stack
+            model.add(Conv2DTranspose(256, (3, 3)))
 
-    # Troisième stack
-    model.add(Conv2DTranspose(384, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
 
-    # Deuxième stack
-    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
-    model.add(Conv2DTranspose(256, (5, 5), strides=(2, 2), activation='relu'))  # Inverse de Conv2D avec (5, 5)
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+        case 4:
+            # Quatrième stack
+            model.add(Conv2DTranspose(384, (3, 3)))
 
-    # Première stack
-    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
-    model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))  # Inverse de Conv2D avec (7, 7)
+            # Troisième stack
+            model.add(Conv2DTranspose(256, (3, 3)))
 
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+        case 3:
+            # Troisième stack
+            model.add(Conv2DTranspose(256, (3, 3)))
+
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+        case 2:
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+        case 1:
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+    return model
+
+def alt_create_deconv_model(input_shape, stack):
+
+    model = Sequential()
+    model.add(Input(shape=input_shape))
+    match stack:
+        case 5:
+            # Cinquième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(384, (3, 3)))
+
+            # Quatrième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(384, (3, 3)))
+
+            # Troisième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(256, (3, 3)))
+
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
+        case 4:
+            # Quatrième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(384, (3, 3)))
+
+            # Troisième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(256, (3, 3)))
+
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
+        case 3:
+            # Troisième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(256, (3, 3)))
+
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
+        case 2:
+            # Deuxième stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(96, (5, 5), strides=(2, 2)))
+
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
+        case 1:
+            # Première stack
+            model.add(UpSampling2D(size=(2, 2)))
+            model.add(ReLU())
+            model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
     return model
