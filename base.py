@@ -35,11 +35,11 @@ def create_zfnet_model(input_shape, num_classes):
 
        # Stack connectée 1
        model.add(Dense(4096, activation='relu'))
-       model.add(Dropout(0.5))
+
 
        # Stack connectée 2
        model.add(Dense(4096, activation='relu'))
-       model.add(Dropout(0.5))
+
 
        # Couche de sortie -> classification
        model.add(Dense(num_classes, activation='softmax'))
@@ -79,7 +79,7 @@ def visualize_filters(activations, num_filters,name):
 # Entrainement du modèle (ImageNet)
 # Test visuel et scoring (à définir)
 
-def create_deconv_model(input_shape):
+def create_deconv_test(input_shape):
     """
     DECONV QUE LE PREMIER STACK POUR LE MOMENT !!
     """
@@ -92,5 +92,32 @@ def create_deconv_model(input_shape):
     model.add(ReLU())
     # Deconvolution to reverse the Conv2D layer
     model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu')) # dernier activation relu ? à verifier...
+
+    return model
+
+def create_deconv_model(input_shape):
+    """
+    PAS ENCORE FINI
+    """
+    model = Sequential()
+    model.add(Input(shape=input_shape))
+
+    # Cinquième stack
+    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
+    model.add(Conv2DTranspose(256, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+
+    # Quatrième stack
+    model.add(Conv2DTranspose(384, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+
+    # Troisième stack
+    model.add(Conv2DTranspose(384, (3, 3), activation='relu'))  # Inverse de Conv2D avec (3, 3)
+
+    # Deuxième stack
+    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
+    model.add(Conv2DTranspose(256, (5, 5), strides=(2, 2), activation='relu'))  # Inverse de Conv2D avec (5, 5)
+
+    # Première stack
+    model.add(UpSampling2D(size=(2, 2)))  # Inverse de MaxPooling2D avec strides=(2, 2)
+    model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))  # Inverse de Conv2D avec (7, 7)
 
     return model

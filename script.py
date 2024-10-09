@@ -15,14 +15,19 @@ from tensorflow.keras.layers import Input
 input_shape = (224, 224, 3)  # Format
 num_classes = 2  # Nombre de classes
 
-model = create_zfnet_model(input_shape, num_classes)
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) # Quel optimiseur utiliser ?
+############################################################################################################ TRAINED MODEL TEST
+model = tf.keras.models.load_model('10.keras')
 model.summary()
 
+
 # Charger et prétraiter une image
-img_path = 'bunny.jpeg'
+img_path = 'data/test/Cat/1.jpg'
 img_array = load_and_preprocess_image(img_path, target_size=(224, 224))
 plt.imshow(img_array[0])
+
+model.predict(img_array)  # Prédiction de l'image [chat, chien]
+
+############################################################################################################ TRAINED MODEL TEST
 
 names = [layer.name for layer in model.layers]
 layer_outputs = [model.get_layer(name).output for name in names]
@@ -49,7 +54,7 @@ weights[0][:,:,0,0]
 flipped_weights[:,:,0,0]
 
 
-deconve1 = create_deconv_model((54, 54, 96)) # dimensions en sortie du premier stack
+deconve1 = create_deconv_test((54, 54, 96)) # dimensions en sortie du premier stack
 deconve1.summary()
 deconve1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
