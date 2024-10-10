@@ -20,70 +20,95 @@ num_classes = 2  # Nombre de classes
 model = tf.keras.models.load_model('10.keras')
 model.summary()
 
-
 # Charger et prétraiter une image
-img_path = '102.jpg'
+img_path = '10115_alt.jpg'
 img_array = load_and_preprocess_image(img_path, target_size=(224, 224))
 plt.imshow(img_array[0])
 
-model.predict(img_array)  # Prédiction de l'image [chat, chien]
+# Prédiction de l'image [chat, chien]
+prediction = model.predict(img_array)
+
+# Afficher l'image et son score
+plt.title(f'Prediction Score: {prediction[0][0]:.4f}')
+plt.savefig(f'prediction_{img_path}.jpg')
+plt.show()
 
 ############################################################################################################ TRAINED MODEL TEST
 
 names = [layer.name for layer in model.layers]
-indices_to_remove = [0,2,8,9,10, 11, 12]
+indices_to_remove = [0, 2,6, 8, 9, 10, 11, 12]
 names = [name for idx, name in enumerate(names) if idx not in indices_to_remove]
 layer_outputs = [model.get_layer(name).output for name in names]
-names # Noms des couches a appeller pour chaque stack du modèle
-
-
+names
 ####################################################################
-nstack = 3 # Choix du stack a visualiser (1, 2, 3, 4, 5)          ##
+nstack = 3  # Choix du stack a visualiser (1, 2, 3, 4, 5)          ##
 ####################################################################
 
-
-activations = get_activations(model, img_array, names[nstack-1]) # Obtenir les activations de la n-ième couche, ici la première
+activations = get_activations(model, img_array, names[nstack - 1])  # Obtenir les activations de la n-ième couche
 activations[1].shape
 
 num_filters = 5  # Nombre de filtres à visualiser
-visualize_filters(activations[1], num_filters,'conved_stack1.jpg') # Visualiser les filtres convoluer (activations[1] -> tableau convolué)
-
-activations[0].get_config() # (actiavtions[0] -> couche de convolution)
+visualize_filters(activations[1], num_filters, 'conved_stack1.jpg')  # Visualiser les filtres convoluer
 
 ############################################################################################################ DECONVOLUTION TEST
-# visualisation DECONVOLUTION TEST du premier stack -> OK
 
 weights = model.get_weights()
-flipped_weights = [np.flip(w, axis=(0, 1)) for w in weights if len(w.shape) == 4]  # Inverser les filtres pour toutes les couches de convolution
-flipped_weights[4].shape
-input_shape_deconv=activations[0].output.shape[1:]
-activations[0].summary()
-#Flipped confirmation factor the first convolutional layer
-weights[0][:,:,0,0]
-flipped_weights[0][:,:,0,0]
-flipped_weights[2].shape
-deconve1 = alt_create_deconv_model(input_shape_deconv,stack=nstack) # dimensions en sortie du premier stack
-deconve1.summary()
+flipped_weights = [np.flip(w, axis=(0, 1)) for w in weights if len(w.shape) == 4]  # Inverser les filtres
+input_shape_deconv = activations[0].output.shape[1:]
+
+deconve1 = create_deconv_model(input_shape_deconv, stack=nstack)  # dimensions en sortie du premier stack
 deconve1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Set the weights for all layers in deconve1
-flipped_weights_index = nstack-1
-flipped_weights[4].shape
+flipped_weights_index = nstack - 1
 for layer in deconve1.layers:
     if isinstance(layer, Conv2DTranspose):
         layer.set_weights([flipped_weights[flipped_weights_index], np.zeros(layer.filters)])
         flipped_weights_index -= 1
 
-i=deconve1.predict(activations[1])
-i/=np.max(i)
-i.shape
+i = deconve1.predict(activations[1])
 
-plt.imshow(img_array[0,:,:,:])
-visualize_filters(activations[1], num_filters,'conved_stack1.jpg')
-visualize_filters(i,3,'deconved_stack1.jpg')
+plt.imshow(img_array[0])
+visualize_filters(activations[1], num_filters, 'conved_stack1.jpg')
+visualize_filters(i, 3, 'deconved_stack1.jpg')
+plt.imshow(i[0])
 
-#plt.savefig('successfully_deconved_bunny.jpg')
-plt.imshow(i[0,:,:,:])
+############################################################################################################ PLOT DECONVOLUTED STACKS
+
+def plot_deconvoluted_stacks(model, img_array, num_stacks=5):
+    weights = model.get_weights()
+    flipped_weights = [np.flip(w, axis=(0, 1)) for w in weights if len(w.shape) == 4]  # Inverser les filtres
+
+    for nstack in range(1, num_stacks + 1):
+        activations = get_activations(model, img_array, names[nstack - 1])  # Obtenir les activations de la n-ième couche
+        input_shape_deconv = activations[0].output.shape[1:]
+        input_shape_deconv
+        deconve = create_deconv_model(input_shape_deconv, stack=nstack)  # dimensions en sortie du premier stack
+        deconve.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+        # Set the weights for all layers in deconve
+        flipped_weights_index = nstack - 1
+        for layer in deconve.layers:
+            if isinstance(layer, Conv2DTranspose):
+                layer.set_weights([flipped_weights[flipped_weights_index], np.zeros(layer.filters)])
+                flipped_weights_index -= 1
+
+        i = deconve.predict(activations[1])
+
+        plt.figure(figsize=(12, 6))
+        plt.subplot(1, 2, 1)
+        plt.imshow(img_array[0])
+        plt.title(f'Original Image')
+
+        plt.subplot(1, 2, 2)
+        plt.imshow(i[0])
+        plt.title(f'Deconvoluted Image - Stack {nstack}')
+
+        plt.savefig(f'deconved_stack{nstack}_{img_path}')
+        plt.show()
+
+# Plot the deconvoluted stacks
+plot_deconvoluted_stacks(model, img_array, num_stacks=5)
 
 ############################################################################################################ ROTATION TEST
 

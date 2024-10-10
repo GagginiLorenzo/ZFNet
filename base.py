@@ -173,6 +173,7 @@ def create_deconv_model(input_shape, stack):
             model.add(UpSampling2D(size=(2, 2)))
             model.add(ReLU())
             model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2)))
+    model.summary()
     return model
 
 def alt_create_deconv_model(input_shape, stack):
@@ -255,4 +256,5 @@ def alt_create_deconv_model(input_shape, stack):
             model.add(UpSampling2D(size=(2, 2)))
             model.add(ReLU())
             model.add(Conv2DTranspose(3, (7, 7), strides=(2, 2), activation='relu'))
+    model.summary()
     return model
