@@ -311,3 +311,61 @@ plt.title('Probability of True Class vs Scale')
 plt.legend()
 plt.grid(True)
 plt.savefig('scale.png')
+
+############################################################################################################ FULL OCCULSION TEST
+
+img_path = '102.jpg'
+img_array = load_and_preprocess_image(img_path, target_size=(224, 224))
+
+def apply_occlusion(img_array, x, y, occlusion_size=50):
+    occluded_img = img_array.copy()
+    occluded_img[0, y:y+occlusion_size, x:x+occlusion_size, :] = 0
+    return occluded_img
+
+occlusion_size = 50
+step_size = 10
+img_height, img_width, _ = img_array.shape[1:]
+
+true_class = 0  # Change this based on your true class
+
+# Initialize results
+results = []
+
+# Apply occlusion and predict
+for y in range(0, img_height, step_size):
+    for x in range(0, img_width, step_size):
+        occluded_img = apply_occlusion(img_array, x, y, occlusion_size)
+        plt.imshow(occluded_img[0])
+        prediction = model.predict(occluded_img)
+        true_class_prob = prediction[0][true_class]
+        results.append((x, y, true_class_prob))
+
+# Convert results to a numpy array for easier plotting
+results = np.array(results)
+results[::38]
+# Create a grid for the heatmap
+heatmap = np.zeros((img_height, img_width))
+for (x, y, prob) in results:
+    x, y = int(x), int(y)  # Ensure x and y are integers
+    heatmap[y:y+occlusion_size, x:x+occlusion_size] = prob
+
+# Plotting
+plt.figure(figsize=(20, 6))
+
+# Plot the heatmap
+plt.subplot(1, 2, 1)
+plt.imshow(heatmap, cmap='viridis', interpolation='nearest', origin='upper')
+plt.colorbar(label='Probability of True Class')
+plt.xlabel('X Position of Occlusion (pixels)')
+plt.ylabel('Y Position of Occlusion (pixels)')
+plt.title('Probability of True Class vs Position of Occlusion')
+plt.grid(False)
+
+# Plot the original image
+plt.subplot(1, 2, 2)
+
+plt.title('Original Image')
+plt.imshow(img_array[0])
+
+plt.savefig('occlusion_test.png')
+plt.show()
