@@ -1,0 +1,60 @@
+---
+title: "Présentation de la lecture d'article"
+author:
+    - Jules Bataller Beltran
+    - Kenewy Dialloand
+    - Kossi Abotsi
+    - Lorenzo Gaggini
+date: "04/10/2024"
+format: beamer
+---
+
+
+### Introduction à ZFNet
+
+- ZFNet (Zeiler & Fergus Network) est un réseau de neurones convolutifs.
+- Objectif de la présentation : expliquer les innovations et résultats clés de ZFNet.
+
+### Contexte des CNN
+
+- Les CNN sont essentiels en vision par ordinateur.
+- ZFNet a été développé pour améliorer l’interprétabilité par rapport à AlexNet.
+
+
+
+
+
+
+### Description de ZFNet
+
+- amélioration d'AlexNet par Matthew Zeiler et Rob Fergus.
+- architecture CNN avec 8 couches (5 convolutives, 3 fully-connected).
+
+### Méthode DeconvNet
+
+- DeconvNet est utilisée pour visualiser les activations des couches.
+- Fonctionnement : déconvolution pour interpréter les caractéristiques apprises.
+
+
+
+
+
+### Résultats expérimentaux
+
+- (expliquer une ou deux figure de l'article (heatmap ? rotation tele ?).
+- (mettre nos propres résultats en illustration ?).
+
+### Exemples de visualisations
+
+- Visualisations obtenues grâce à DeconvNet. (figure 2 de l'article ?).
+- (mettre nos propres résultats en illustration ?).
+
+
+
+
+
+
+### Impact et contributions
+
+- ZFNet a influencé les architectures CNN ultérieures.
+- Améliorations notables en interprétation des résultats en vision par ordinateur.
