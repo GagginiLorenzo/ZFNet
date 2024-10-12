@@ -41,7 +41,7 @@ names = [name for idx, name in enumerate(names) if idx not in indices_to_remove]
 layer_outputs = [model.get_layer(name).output for name in names]
 names
 ####################################################################
-nstack = 3  # Choix du stack a visualiser (1, 2, 3, 4, 5)          ##
+nstack = 1  # Choix du stack a visualiser (1, 2, 3, 4, 5)          ##
 ####################################################################
 
 activations = get_activations(model, img_array, names[nstack - 1])  # Obtenir les activations de la n-ième couche
@@ -82,7 +82,6 @@ def plot_deconvoluted_stacks(model, img_array, num_stacks=5):
     for nstack in range(1, num_stacks + 1):
         activations = get_activations(model, img_array, names[nstack - 1])  # Obtenir les activations de la n-ième couche
         input_shape_deconv = activations[0].output.shape[1:]
-        input_shape_deconv
         deconve = create_deconv_model(input_shape_deconv, stack=nstack)  # dimensions en sortie du premier stack
         deconve.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 

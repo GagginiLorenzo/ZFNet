@@ -48,12 +48,13 @@ checkpoint_callback = ModelCheckpoint(
 # Number of classes
 num_classes = len(train_generator.class_indices)
 train_generator.class_indices
-model = create_zfnet_model(input_shape=(img_width, img_height, 3), num_classes=num_classes)
+model = create_zfnet_model((img_width, img_height, 3), num_classes)
 model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
 
 batch_size = 32
 epochs = 1
+
 for i in range (1, 10):
     print(i)
     model.fit(
@@ -66,8 +67,8 @@ for i in range (1, 10):
     )
     model.save('zfnet_model_epoch_{i}.keras')
 
-model.save('10.h5')
-model.save('10.keras')
+model.save('20.h5')
+model.save('20.keras')
 
 test_loss, test_accuracy = model.evaluate(test_generator, steps=test_generator.samples // batch_size)
 print(f'Test accuracy: {test_accuracy:.4f}')
