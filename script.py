@@ -14,32 +14,44 @@ from tensorflow.keras.layers import Input
 
 ############################################################################################################ INIT
 
-input_shape = (224, 224, 3)  # Format
-num_classes = 2  # Nombre de classes
+"""
+Cette section initialise le modèle, charge une image, la prétraite et fait une prédiction.
+Le score de prédiction est ensuite affiché avec l'image.
+"""
 
+input_shape = (224, 224, 3)  # Format
+num_classes = 2  # Number of classes
+
+# Load the pre-trained model
 model = tf.keras.models.load_model('10.keras')
 model.summary()
 
-# Charger et prétraiter une image
-img_path = '10115_alt.jpg'
+# Load and preprocess an image
+img_path = 'exp/10115.jpg'
 img_array = load_and_preprocess_image(img_path, target_size=(224, 224))
 plt.imshow(img_array[0])
 
-# Prédiction de l'image [chat, chien]
+# Predict the class of the image [cat, dog]
 prediction = model.predict(img_array)
 
-# Afficher l'image et son score
+# Display the image and its prediction score
 plt.title(f'Prediction Score: {prediction[0][0]:.4f}')
-plt.savefig(f'prediction_{img_path}.jpg')
+plt.savefig(f'prediction')
 plt.show()
 
 ############################################################################################################ TRAINED MODEL TEST
 
+"""
+Cette section visualise les activations d'une couche spécifique du modèle.
+Elle filtre d'abord certaines couches en fonction de leurs indices, puis obtient les activations
+de la couche spécifiée (nstack) et visualise un nombre défini de filtres à partir de ces activations.
+"""
+
 names = [layer.name for layer in model.layers]
-indices_to_remove = [0, 2,6, 8, 9, 10, 11, 12]
+indices_to_remove = [0, 2, 6, 8, 9, 10, 11, 12]
 names = [name for idx, name in enumerate(names) if idx not in indices_to_remove]
 layer_outputs = [model.get_layer(name).output for name in names]
-names
+
 ####################################################################
 nstack = 1  # Choix du stack a visualiser (1, 2, 3, 4, 5)          ##
 ####################################################################
@@ -52,11 +64,17 @@ visualize_filters(activations[1], num_filters, 'conved_stack1.jpg')  # Visualise
 
 ############################################################################################################ DECONVOLUTION TEST
 
+"""
+Cette section effectue un test de déconvolution sur le modèle.
+Elle inverse les filtres du modèle, crée un modèle de déconvolution, définit les poids,
+et visualise les activations et déconvolutions d'une couche spécifique.
+"""
+
 weights = model.get_weights()
 flipped_weights = [np.flip(w, axis=(0, 1)) for w in weights if len(w.shape) == 4]  # Inverser les filtres
 input_shape_deconv = activations[0].output.shape[1:]
 
-deconve1 = create_deconv_model(input_shape_deconv, stack=nstack)  # dimensions en sortie du premier stack
+deconve1 = create_deconv_model(input_shape_deconv, stack=nstack)  # Dimensions en sortie du stack
 deconve1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Set the weights for all layers in deconve1
@@ -74,47 +92,17 @@ visualize_filters(i, 3, 'deconved_stack1.jpg')
 plt.imshow(i[0])
 
 ############################################################################################################ PLOT DECONVOLUTED STACKS
+"""
+Cette section visualise les déconvolutions de plusieurs couches du modèle.
+"""
 
-def plot_deconvoluted_stacks(model, img_array, num_stacks=5):
-    weights = model.get_weights()
-    flipped_weights = [np.flip(w, axis=(0, 1)) for w in weights if len(w.shape) == 4]  # Inverser les filtres
-
-    for nstack in range(1, num_stacks + 1):
-        activations = get_activations(model, img_array, names[nstack - 1])  # Obtenir les activations de la n-ième couche
-        input_shape_deconv = activations[0].output.shape[1:]
-        deconve = create_deconv_model(input_shape_deconv, stack=nstack)  # dimensions en sortie du premier stack
-        deconve.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-        # Set the weights for all layers in deconve
-        flipped_weights_index = nstack - 1
-        for layer in deconve.layers:
-            if isinstance(layer, Conv2DTranspose):
-                layer.set_weights([flipped_weights[flipped_weights_index], np.zeros(layer.filters)])
-                flipped_weights_index -= 1
-
-        i = deconve.predict(activations[1])
-
-        plt.figure(figsize=(12, 6))
-        plt.subplot(1, 2, 1)
-        plt.imshow(img_array[0])
-        plt.title(f'Original Image')
-
-        plt.subplot(1, 2, 2)
-        plt.imshow(i[0])
-        plt.title(f'Deconvoluted Image - Stack {nstack}')
-
-        plt.savefig(f'deconved_stack{nstack}_{img_path}')
-        plt.show()
-
-# Plot the deconvoluted stacks
-plot_deconvoluted_stacks(model, img_array, num_stacks=5)
+plot_deconvoluted_stacks(model, img_array,names, num_stack=5)
 
 ############################################################################################################ ROTATION TEST
 
 from PIL import Image
 
-# Load multiple images
-image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Add paths to your images here
+image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Ajoutez les chemins vers vos images ici
 
 results = []
 
@@ -129,7 +117,7 @@ for img_path in image_paths:
 
 c = 0  # cat 0 dog 1
 
-# Plotting
+# Plot
 plt.figure(figsize=(10, 6))
 
 for img_path in image_paths:
@@ -148,8 +136,7 @@ plt.show()
 
 ############################################################################################################ FLIP TEST
 
-# Load multiple images
-image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Add paths to your images here
+image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Ajoutez les chemins vers vos images ici
 results = []
 
 for img_path in image_paths:
@@ -174,7 +161,7 @@ for img_path in image_paths:
 
     results.append((img_path, cat_value_horizontal, cat_value_vertical, image_flipped_horizontal, image_flipped_vertical))
 
-# Plotting
+# Plot
 plt.figure(figsize=(12, 6 * len(image_paths)))
 
 for idx, (img_path, cat_value_horizontal, cat_value_vertical, image_flipped_horizontal, image_flipped_vertical) in enumerate(results):
@@ -191,8 +178,7 @@ plt.show()
 
 ############################################################################################################ CROP TEST
 
-# Load multiple images
-image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Add paths to your images here
+image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Ajoutez les chemins vers vos images ici
 results = []
 
 for img_path in image_paths:
@@ -203,7 +189,6 @@ for img_path in image_paths:
     prediction_base = model.predict(image_base)
     results.append((img_path, prediction_base, prediction_cropped))
 
-# Plot the images side by side
 plt.figure(figsize=(12, 6 * len(image_paths)))
 
 for idx, (img_path, prediction_base, prediction_cropped) in enumerate(results):
@@ -221,8 +206,7 @@ plt.show()
 
 ############################################################################################################ SHIFT TEST
 
-# Load multiple images
-image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Add paths to your images here
+image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Ajoutez les chemins vers vos images ici
 results = []
 
 for img_path in image_paths:
@@ -242,11 +226,11 @@ for img_path in image_paths:
         prediction_translated_ud = model.predict(trans_ud)
         results.append((f'{img_path} translated up-down {i} pixels', prediction_translated_ud))
 
-c = 0 # cat 0 dog 1
+c = 0 # chat 0, chien 1
 
 translations = list(range(-50, 51, 5))
 
-# Plotting for Left-Right Translation
+# Tracé pour la translation gauche-droite
 plt.figure(figsize=(10, 6))
 for img_path in image_paths:
     img_results_lr = [result for result in results if f'{img_path} translated left-right' in result[0]]
@@ -261,7 +245,7 @@ plt.grid(True)
 plt.savefig('left_right_translation.png')
 plt.show()
 
-# Plotting for Up-Down Translation
+# Tracé pour la translation haut-bas
 plt.figure(figsize=(10, 6))
 for img_path in image_paths:
     img_results_ud = [result for result in results if f'{img_path} translated up-down' in result[0]]
@@ -278,8 +262,7 @@ plt.show()
 
 ############################################################################################################ SCALE TEST
 
-# Load multiple images
-image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Add paths to your images here
+image_paths = ['102.jpg', '10041.jpg', '10115.jpg']  # Ajoutez les chemins vers vos images ici
 results = []
 
 for img_path in image_paths:
@@ -313,24 +296,19 @@ plt.savefig('scale.png')
 
 ############################################################################################################ FULL OCCULSION TEST
 
-img_path = '102.jpg'
+img_path = '102.jpg' # Ajoutez lee chemin vers votre image ici
 img_array = load_and_preprocess_image(img_path, target_size=(224, 224))
-
-def apply_occlusion(img_array, x, y, occlusion_size=50):
-    occluded_img = img_array.copy()
-    occluded_img[0, y:y+occlusion_size, x:x+occlusion_size, :] = 0
-    return occluded_img
 
 occlusion_size = 50
 step_size = 10
 img_height, img_width, _ = img_array.shape[1:]
 
-true_class = 0  # Change this based on your true class
+true_class = 0  # Changez ceci en fonction de votre classe réelle (0 pour chat, 1 pour chien dans notre cas)
 
-# Initialize results
+# Initialiser les résultats
 results = []
 
-# Apply occlusion and predict
+# Appliquer l'occlusion et prédire
 for y in range(0, img_height, step_size):
     for x in range(0, img_width, step_size):
         occluded_img = apply_occlusion(img_array, x, y, occlusion_size)
@@ -339,19 +317,16 @@ for y in range(0, img_height, step_size):
         true_class_prob = prediction[0][true_class]
         results.append((x, y, true_class_prob))
 
-# Convert results to a numpy array for easier plotting
+# Convertir les résultats en un tableau numpy
 results = np.array(results)
-results[::38]
-# Create a grid for the heatmap
 heatmap = np.zeros((img_height, img_width))
+
 for (x, y, prob) in results:
-    x, y = int(x), int(y)  # Ensure x and y are integers
+    x, y = int(x), int(y)  # S'assurer que x et y sont des entiers
     heatmap[y:y+occlusion_size, x:x+occlusion_size] = prob
 
-# Plotting
 plt.figure(figsize=(20, 6))
 
-# Plot the heatmap
 plt.subplot(1, 2, 1)
 plt.imshow(heatmap, cmap='viridis', interpolation='nearest', origin='upper')
 plt.colorbar(label='Probability of True Class')
@@ -360,7 +335,7 @@ plt.ylabel('Y Position of Occlusion (pixels)')
 plt.title('Probability of True Class vs Position of Occlusion')
 plt.grid(False)
 
-# Plot the original image
+# Plot
 plt.subplot(1, 2, 2)
 
 plt.title('Original Image')
