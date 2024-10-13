@@ -2,59 +2,141 @@
 title: "Présentation de la lecture d'article"
 author:
     - Jules Bataller Beltran
-    - Kenewy Dialloand
+    - Kenewy Diallo
     - Kossi Abotsi
     - Lorenzo Gaggini
-date: "04/10/2024"
+date: "14/10/2024"
 format: beamer
 ---
 
 
-### Introduction à ZFNet
+## Lorenzo
 
-- ZFNet (Zeiler & Fergus Network) est un réseau de neurones convolutifs.
-- Objectif de la présentation : expliquer les innovations et résultats clés de ZFNet.
+## Sommaire
 
-### Contexte des CNN
+1.**Contexte**
+   * Enjeux de la Visualisation des Réseaux de Neurones Convolutionnels
+   * Le cadre statistiques
 
-- Les CNN sont essentiels en vision par ordinateur.
-- ZFNet a été développé pour améliorer l’interprétabilité par rapport à AlexNet.
+2. **Principaux outils**
+   * Description des principales couches : convolution, ReLU, pooling, et couches entièrement connectées.
+   * Présentation du DeconvNet et de ses méthodes (unpooling, rectification inversée, convolution transposée) pour visualiser les activations.
+
+3. **Résultats expérimentaux**
+   * Visualisations comparatives des activations, impact de l'occultation sur les prédictions.
+4. **Conclusion**
+
+## Contexte
+
+### Enjeux de la Visualisation des Réseaux de Neurones Convolutionnels
+
+## Contexte
+
+### Le cadre statistiques
+
+## Principaux outils
+
+### Fonctionnement des réseaux de neurones convolutionnels (CNN)
+
+- Les réseaux de neurones convolutionnels (CNN) traitent des données structurées en grilles, comme les images et se compose de plusieurs types de couches :
+
+  - **Couche de convolution** :
+    - Applique des filtres sur l'image pour extraire des caractéristiques locales (bords, textures).
+
+  - **Fonction d'activation (ReLU)** :
+    - Permet de modéliser des relations complexes.
+
+  - **Couche de pooling** :
+    - Rend le réseau plus robuste aux variations (translations, redimensionnements).
+
+  - **Couches entièrement connectées** :
+    - Les cartes d’activation sont aplaties et traités comme dans un réseau de neurones classique.
+---
+
+##  Principaux outils
+
+### DeconvNet : Interprétation des CNN
+
+- Le DeconvNet permet d’interpréter les activations d’un CNN en reconstruisant l’image d’origine à partir des caractéristiques extraites.
+
+  - **Unpooling (Dé-pooling)** :
+    - Permet de restaurer la structure de l’activation.
+
+  - **Rectification inversée** :
+    - Applique l’inverse de la fonction d’activation ReLU utilisée dans le CNN.
+
+  - **Convolution transposée** :
+    - Permet de reconstruire une image en visualisant les caractéristiques identifiées par le CNN.
+
+- Cette approche offre une meilleure compréhension des motifs détectés à chaque niveau du réseau, en identifiant quelles parties de l’image d’origine ont influencé les activations.
 
 
+## Résultats expérimentaux
 
+### Visualisation des activations (Heatmap)
 
+::: {#fig-Visualisation layout-nrow=2}
 
+![Résultat de l'article original :  Image d'entrée, Projection de la carte de caractéristiques la plus forte, Probabilité de la classe correcte.](kenewy1.jpg){#fig-1 width=90%}
 
-### Description de ZFNet
+![Résultat de la simulation reproduite](kenewy2.jpg){#fig-2 width=50%}
 
-- amélioration d'AlexNet par Matthew Zeiler et Rob Fergus.
-- architecture CNN avec 8 couches (5 convolutives, 3 fully-connected).
+Impact de l'occultation sur les activations des caractéristiques et les prédictions de classe
 
-### Méthode DeconvNet
+:::
 
-- DeconvNet est utilisée pour visualiser les activations des couches.
-- Fonctionnement : déconvolution pour interpréter les caractéristiques apprises.
+## Résultats expérimentaux
 
+### Effet de la rotation sur les performances du modèle
 
+![Effet de la rotation sur la classification](kenewy3.jpg){width=100%}
 
+## Résultats expérimentaux
 
+### Exemples de visualisations (1/2)
 
-### Résultats expérimentaux
+![Figure de DeconvNet](decon1_2.png)
 
-- (expliquer une ou deux figure de l'article (heatmap ? rotation tele ?).
-- (mettre nos propres résultats en illustration ?).
+## Résultats expérimentaux
 
-### Exemples de visualisations
+### Exemples de visualisations (2/2)
 
-- Visualisations obtenues grâce à DeconvNet. (figure 2 de l'article ?).
-- (mettre nos propres résultats en illustration ?).
+![Figure de DeconvNet](decon3.png){width=90%}
 
+## Résultats expérimentaux
 
+### Simulation deconvolution (1/2)
 
+::: {#fig-kossi1 layout-nrow=2}
 
+![](cat_1.jpg)
 
+![](cat_2.jpg)
 
-### Impact et contributions
+![Avec fond de couleur](stack_1.jpg)
 
-- ZFNet a influencé les architectures CNN ultérieures.
-- Améliorations notables en interprétation des résultats en vision par ordinateur.
+![Sans fond de couleur](stack_1_.png)
+
+Predictions initials et couche 1
+
+:::
+
+## Résultats expérimentaux
+
+### Simulation deconvolution (2/2)
+
+::: {#fig-kossi2 layout-nrow=2}
+
+![](stack_2.jpg)
+
+![](stack_2_.jpg)
+
+![Avec fond de couleur](stack_3.jpg)
+
+![Sans fond de couleur](stack_3_.jpg)
+
+Couches 2 et 3
+
+:::
+
+## Conclusion
