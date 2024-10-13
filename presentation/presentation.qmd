@@ -98,7 +98,7 @@ Impact de l'occultation sur les activations des caractéristiques et les prédic
 
 ### Exemples de visualisations (2/2)
 
-![Figure de DeconvNet](decon3.png){width=90%}
+![Figure de DeconvNet](decon3.png){width=80%}
 
 ## Résultats expérimentaux
 
