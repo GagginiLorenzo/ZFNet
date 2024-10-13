@@ -9,9 +9,6 @@ date: "14/10/2024"
 format: beamer
 ---
 
-
-## Lorenzo
-
 ## Sommaire
 
 1.**Contexte**
