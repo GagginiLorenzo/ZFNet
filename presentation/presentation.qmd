@@ -11,7 +11,7 @@ format: beamer
 
 ## Sommaire
 
-1.**Contexte**
+1. **Contexte**
    * Enjeux de la Visualisation des Réseaux de Neurones Convolutionnels
    * Le cadre statistiques
 
