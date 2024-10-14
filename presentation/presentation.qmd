@@ -185,3 +185,27 @@ Impact de l'occultation sur les activations des caractéristiques et les prédic
      * Le modèle CNN calcule une distribution de probabilité sur les classes pour chaque image, interprétée comme une approximation de **$P(Y \mid X, \theta)$**. L'étiquette de classe prédite correspond à la **classe ayant la probabilité maximale** (MAP : Maximum A Posteriori).
      * L'analyse des prédictions sur les images de validation permet de mieux comprendre l'incertitude du modèle, notamment lorsque les probabilités prédites sont réparties entre plusieurs classes, ce qui peut indiquer une **incertitude sur les caractéristiques visuelles**.
 
+## Supplément
+
+### ZFNet architecture
+
+![](sup1.png)
+
+## Supplément
+
+### ZFNet architecture
+
+![](sup2.png){width=80%}
+
+
+## Supplément
+
+### Softmax Illustration
+
+![](sup3.png){width=80%}
+
+## Supplément
+
+### Unpooling Illustration
+
+![](sup4.jpg){width=80%}
