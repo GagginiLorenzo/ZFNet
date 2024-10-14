@@ -27,7 +27,7 @@ format: beamer
 
 ## Contexte
 
-### Le cadre statistiques
+### Le cadre statistique
 
    * Classification supervisée d'images, où chaque image est associée à une étiquette de classe.
    * Minimisation d'une fonction de perte par descente de gradient
